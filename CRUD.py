@@ -111,10 +111,9 @@ def PseudoDropClient(id):
 
 def ListClient():
     try:
-      sql = "SELECT name FROM users WHERE status = TRUE"
+      sql = "SELECT name FROM clients WHERE status = TRUE"
       mycursor.execute(sql)
       result=mycursor.fetchall()
-      print(result)
       return result
     except:
       print("ERROR VUELVA A INTENTAR")
@@ -122,17 +121,13 @@ def ListClient():
 def UpdateClient(id, name, lastname, user):
     try:
       id=int(id)
-      sql = "UPDATE users SET name=%s, lastname=%s, creatorID=%s WHERE id = %s"
+      sql = "UPDATE clients SET name=%s, lastname=%s, creatorID=%s WHERE id = %s"
       val = (name, lastname, user, id,)
       mycursor.execute(sql, val)
       db.commit()
       print("ACTUALIZADO correctamente")
     except:
         print("ERROR VUELVA A INTENTAR")
-
-
-
-
 
 
 
@@ -157,7 +152,7 @@ def SelectVehicle(id):
       val = (id,)
       mycursor.execute(sql, val)
       result = mycursor.fetchall()
-      return result
+      return result[0]
     except:
         print("ERROR VUELVA A INTENTAR")
 
@@ -178,7 +173,6 @@ def ListVehicles(client):
       val = (client,)
       mycursor.execute(sql, val)
       result=mycursor.fetchall()
-      print(result)
       return result
     except:
       print("ERROR VUELVA A INTENTAR")
@@ -193,7 +187,6 @@ def UpdateVehicle(id, plate, brand, model, RecordDate, client):
       print("ACTUALIZADO correctamente")
     except:
         print("ERROR VUELVA A INTENTAR")
-
 
 
 
@@ -367,5 +360,7 @@ def PieceQuantity(piece, state):
       result = mycursor.execute(sql,val)
       UpdatePieces(result[1], result[2], result[3]+1)
       print("Piezas devueltas")
+      db.commit()
+
 
 
