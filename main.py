@@ -391,7 +391,7 @@ def clients_page():
 
 
     def EventDelete():
-        api.PseudoDropUser(id_var.get())
+        api.PseudoDropClient(id_var.get())
         messagebox.showwarning("REALIZADO","USUARIO ELIMINADO")
 
     def EventEdit():
@@ -454,9 +454,9 @@ def vehicles_page():
     brand_entry.place(x=160, y=120)
     
     model_var = tk.StringVar()
-    model_label = tk.Label(vehicles_page_fm)
+    model_label = tk.Label(vehicles_page_fm, text="Modelo")
     model_label.place(x=30, y=150)
-    model_entry = tk.Entry(vehicles_page_fm, text="Modelo: ",textvariable=model_var,state="readonly")
+    model_entry = tk.Entry(vehicles_page_fm,textvariable=model_var,state="readonly")
     model_entry.place(x=160, y=150)
     
      #Validaciones
@@ -546,7 +546,6 @@ def vehicles_page():
     edit_btn.place(x=220, y=400)
     remove_btn = tk.Button(vehicles_page_fm, text="Remover", command=EventDelete)
     remove_btn.place(x=270, y=400)
-
 
 
 #ventana reparaciones
@@ -763,9 +762,9 @@ def stock_page():
         validate=Validate()
         if validate:
             api.UpdatePieces(
-            unit_id_var.get(),
             descriptn_var.get(),
-            stock_var.get())
+            stock_var.get(),
+            unit_id_var.get())
             messagebox.showinfo("REALIZADO","MODIFICADO CORRECTAMENTE")
 
     def EventClean():

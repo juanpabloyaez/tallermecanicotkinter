@@ -205,7 +205,7 @@ def UpdateVehicle(id, plate, brand, model, RecordDate, client):
     try:
       id=int(id)
       sql = "UPDATE vehicles SET plate=%s, brand=%s, model=%s, RecordDate=%s, ownerId=%s WHERE id = %s"
-      val = (plate, brand, model, RecordDate, client, id)
+      val = (plate, brand, model, RecordDate, client, id,)
       mycursor.execute(sql, val)
       db.commit()
       print("ACTUALIZADO correctamente")
@@ -224,11 +224,13 @@ def UpdateVehicle(id, plate, brand, model, RecordDate, client):
 
 def InsertService(name, total, enterDate, deportDate, vehicleId, pieces):
     try:
-      vehicleId=int(vehicleId)
+      vehicleId=int(vehicleId+1)
+      total=int(total)
+      pieces=int(pieces+1)
       sql = "INSERT INTO services (name, total, enterDate, deportDate, vehicleId, pieces) VALUES (%s, %s, %s, %s, %s, %s)"
       val = (name, total, enterDate, deportDate, vehicleId, pieces,)
       mycursor.execute(sql, val)
-      PieceQuantity(pieces,0)
+      PieceQuantity(pieces,-total)
       db.commit()
       print("Ingresado correctamente")
     except:
@@ -241,11 +243,12 @@ def SelectService(id):
       val = (id,)
       mycursor.execute(sql, val)
       result = mycursor.fetchone()
+      print(result)
       return result
     except:
         print("ERROR VUELVA A INTENTAR")
 
-def DropService(id):
+def DropService(id,quantity):
     try:
       id=int(id)
       service = SelectService(id)
@@ -253,7 +256,7 @@ def DropService(id):
       sql = "DELETE FROM services WHERE id = %s"
       val = (id,)
       mycursor.execute(sql, val)
-      PieceQuantity(pieces,1)
+      PieceQuantity(pieces,-quantity)
       db.commit()
       print("Baja")
     except:
@@ -275,26 +278,28 @@ def ListService(vehicle):
       print("ERROR VUELVA A INTENTAR")
 
 def UpdateService(id, name, total, enterDate, deportDate, vehicleId, pieces):
-    try:
+#    try:
       id=int(id)
+      total=int(total)
+      vehicleId=int(vehicleId+1)
+      pieces=int(pieces+1)
       service = SelectService(id)
-      lastpieces = service[-1]
+      lastpieces = int(service[2])
       if pieces == lastpieces:
         sql = "UPDATE services SET name=%s, total=%s, enterDate=%s, deportDate=%s, vehicleId=%s, pieces=%s WHERE id = %s"
         val = (name, total, enterDate, deportDate, vehicleId, pieces, id)
         mycursor.execute(sql, val)
         db.commit()
       else:
-        PieceQuantity(lastpieces,1)
-        lastpieces
+        lastpieces=lastpieces-total
         sql = "UPDATE services SET name=%s, total=%s, enterDate=%s, deportDate=%s, vehicleId=%s, pieces=%s WHERE id = %s"
         val = (name, total, enterDate, deportDate, vehicleId, pieces, id)
         mycursor.execute(sql, val)
-        PieceQuantity(pieces,0)
         db.commit()
+        PieceQuantity(pieces,lastpieces)
       print("ACTUALIZADO correctamente")
-    except:
-        print("ERROR VUELVA A INTENTAR")
+#    except:
+      print("ERROR VUELVA A INTENTAR")
 
 
 
@@ -351,30 +356,30 @@ def ListPieces():
       print("ERROR VUELVA A INTENTAR")
 
 def UpdatePieces(name, quantity, id):
-    try:
+#    try:
       id=int(id)
       quantity=int(quantity)
       sql = "UPDATE stock SET name=%s, quantity=%s WHERE id = %s"
-      val = (name, quantity, id)
+      val = (name, quantity, id,)
       mycursor.execute(sql, val)
       db.commit()
-    except:
-        print("ERROR VUELVA A INTENTAR")
+#    except:
+      print("ERROR VUELVA A INTENTAR")
 
-def PieceQuantity(piece, state):
-    if state == 0:
+def PieceQuantity(piece, number):
+#    try:
       sql = "SELECT * FROM stock WHERE name = %s"
       val = (piece,)
-      result = mycursor.fetchone(sql,val)
-      if result[-1] > 0:
-        UpdatePieces(result[1], result[2], result[3]-1)
+      mycursor.execute(sql, val)
+      result = mycursor.fetchone()
+      print(result)
+      print(number)
+      if result[3] > 0:
+        UpdatePieces(result[0], result[1], result[2]+number, result[3], result[4], result[5])
+        db.commit()
       else:
-         messagebox.showwarning("ALERTA","NO HAR PIEZAS DISPONIBLES")
-    else:
-      sql = "SELECT * FROM stock WHERE name = %s"
-      val = (piece,)
-      result = mycursor.fetchone(sql,val)
-      UpdatePieces(result[1], result[2], result[3]+1)
+          messagebox.showwarning("ALERTA","NO HAR PIEZAS DISPONIBLES")
+#    except:
       messagebox.showwarning("ALERTA","PIEZAS DEVUELTAS")
-      db.commit()
+    
 
